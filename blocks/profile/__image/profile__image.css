@@ -1,0 +1,10 @@
+.profile__image {
+    max-width: 38vw;
+    border-radius: 50%;
+}
+
+@media all and (min-width: 940px) {
+    .profile__image {
+        max-width: 120px;
+    }    
+}

@@ -1,0 +1,9 @@
+.element__like-button {
+    min-width: 22px;
+    min-height: 19px;
+    background-image: url(../../../images/button/element-like-button.svg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+}
