@@ -8,5 +8,5 @@
 @media all and (min-width: 940px) {
     .profile__info {
         flex-direction: row;
-    }    
+    }  
 }
