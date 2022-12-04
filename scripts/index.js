@@ -14,8 +14,6 @@ const profileName = document.querySelector('.profile__title');
 const profileInfo = document.querySelector('.profile__subtitle');
 const formEditElement = document.querySelector('#formEdit');
 const formAddElement = document.querySelector('#formAdd');
-const formEditButton = document.querySelector('#formEditSubmit');
-const formAddButton = document.querySelector('#formAddSubmit');
 const nameInput = document.querySelector('.form__input_type_name');
 const jobInput = document.querySelector('.form__input_type_about');
 const placeInput = document.querySelector('.form__input_type_place');
@@ -93,9 +91,11 @@ function createCard(item) {
     //Cлушатели
     cardElement.querySelector('.element__like-button').addEventListener('click', putLike);
     cardElement.querySelector('.element__trash-button').addEventListener('click', deleteCard);
-    cardElement.querySelector('.element__image').addEventListener('click', () => {openPopup(popupCard)});
-    cardElement.querySelector('.element__image').addEventListener('click', getCurrentValuesPopupCard);
-
+    cardElement.querySelector('.element__image').addEventListener('click', (evt) => {
+        openPopup(popupCard);
+        getCurrentValuesPopupCard(evt);
+    });
+    
     return cardElement;
 }
 
@@ -114,6 +114,8 @@ function handleEditFormSubmit(evt) {
 
     profileName.textContent = nameInput.value;
     profileInfo.textContent = jobInput.value;
+
+    closePopup(popupEdit);
 }
 
 //Обработчик отправки формы добавления новой карточки
@@ -122,13 +124,17 @@ function handleAddFormSubmit(evt) {
   
     renderCard({name: placeInput.value, link: linkInput.value});
 
+    closePopup(popupAdd);
+
     placeInput.value = '';
     linkInput.value = '';
 }
 
 //Слушатели
-popupEditOpenButton.addEventListener('click', () => {openPopup(popupEdit)});
-popupEditOpenButton.addEventListener('click', fillCurrentValuesPopupEdit);
+popupEditOpenButton.addEventListener('click', () => {
+    openPopup(popupEdit);
+    fillCurrentValuesPopupEdit();
+});
 
 popupAddOpenButton.addEventListener('click', () => {openPopup(popupAdd)});
 
@@ -141,7 +147,3 @@ popupCardCloseButton.addEventListener('click', () => {closePopup(popupCard)});
 formEditElement.addEventListener('submit', handleEditFormSubmit);
 
 formAddElement.addEventListener('submit', handleAddFormSubmit);
-
-formEditButton.addEventListener('click', () => {closePopup(popupEdit)});
-
-formAddButton.addEventListener('click', () => {closePopup(popupAdd)});
