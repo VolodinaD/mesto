@@ -18,6 +18,9 @@ const nameInput = document.querySelector('.form__input_type_name');
 const jobInput = document.querySelector('.form__input_type_about');
 const placeInput = document.querySelector('.form__input_type_place');
 const linkInput = document.querySelector('.form__input_type_link');
+const formEditSubmitButton = document.querySelector('#formEditSubmit');
+const formAddSubmitButton = document.querySelector('#formAddSubmit');
+const popupArray = [popupAdd, popupEdit, popupCard];
 
 //Массив из 6 карточек с фотографиями
 const initialCards = [
@@ -66,6 +69,22 @@ function openPopup(popup) {
 function closePopup(popup) {
     popup.classList.remove('popup_opened');
 }
+
+popupArray.forEach((popup) => {
+    //Закрыть всплывающие окна кликом на оверлей
+    popup.addEventListener('click', (evt) => {
+        if (evt.target == evt.currentTarget) {
+            closePopup(popup);
+        }
+    });
+
+    //Закрыть всплывающие окна нажатием на Esc
+    document.addEventListener('keydown', (evt) => {
+        if (evt.key === 'Escape') {
+            closePopup(popup);
+        }
+    });
+});
 
 //Заполнить поля формы редактирования профиля текущими значениями
 function fillCurrentValuesPopupEdit() {
@@ -116,6 +135,9 @@ function handleEditFormSubmit(evt) {
     profileInfo.textContent = jobInput.value;
 
     closePopup(popupEdit);
+
+    formEditSubmitButton.classList.add('form__button_disabled');
+    formEditSubmitButton.disabled = true;
 }
 
 //Обработчик отправки формы добавления новой карточки
@@ -126,8 +148,10 @@ function handleAddFormSubmit(evt) {
 
     closePopup(popupAdd);
 
-    placeInput.value = '';
-    linkInput.value = '';
+    formAddElement.reset();
+
+    formAddSubmitButton.classList.add('form__button_disabled');
+    formAddSubmitButton.disabled = true;
 }
 
 //Слушатели
