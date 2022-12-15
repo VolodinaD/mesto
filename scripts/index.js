@@ -1,4 +1,4 @@
-const cards = document.querySelector('.elements');
+const cardsContainer = document.querySelector('.elements');
 const cardTemplate = document.querySelector('.element-template').content;
 const popupEdit = document.querySelector('#popupEdit');
 const popupEditOpenButton = document.querySelector('.profile__edit-button');
@@ -60,27 +60,32 @@ function deleteCard(evt) {
     evt.target.closest('.element').remove();
 }
 
+//Закрыть всплывающие окна кликом на клавишу Esc
+function closeByEsc(evt) {
+    if (evt.key === 'Escape') {
+        const openedPopup = document.querySelector('.popup_opened');
+        closePopup(openedPopup); 
+    }
+} 
+
 //Открыть всплывающие окна
 function openPopup(popup) {
     popup.classList.add('popup_opened');
+
+    document.addEventListener('keydown', closeByEsc);
 }
 
 //Закрыть всплывающие окна
 function closePopup(popup) {
     popup.classList.remove('popup_opened');
+
+    document.removeEventListener('keydown', closeByEsc);
 }
 
+//Закрыть всплывающие окна кликом на оверлей
 popupArray.forEach((popup) => {
-    //Закрыть всплывающие окна кликом на оверлей
     popup.addEventListener('click', (evt) => {
         if (evt.target == evt.currentTarget) {
-            closePopup(popup);
-        }
-    });
-
-    //Закрыть всплывающие окна нажатием на Esc
-    document.addEventListener('keydown', (evt) => {
-        if (evt.key === 'Escape') {
             closePopup(popup);
         }
     });
@@ -120,7 +125,7 @@ function createCard(item) {
 
 //Добавление карточек
 function renderCard(item) {
-    cards.prepend(createCard(item));
+    cardsContainer.prepend(createCard(item));
 }
 
 initialCards.forEach((item) => {
