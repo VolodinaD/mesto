@@ -2,65 +2,55 @@ import '../pages/index.css';
 import Card from '../components/Card.js';
 import FormValidator from '../components/FormValidator.js';
 import Section from '../components/Section.js';
-import Popup from '../components/Popup.js';
 import PopupWithImage from '../components/PopupWithImage.js';
 import PopupWithForm from '../components/PopupWithForm.js';
 import UserInfo from '../components/UserInfo.js';
 import {
     popupEditOpenButton,
     popupAddOpenButton,
-    nameInput,
-    jobInput,
     formValidators,
     obj,
     initialCards
 } from '../utils/constants.js';
 
-//Создание экземляров классов для попапов
-const popupEdit = new Popup('#popupEdit');
-const popupAdd = new Popup('#popupAdd');
 const popupCard = new PopupWithImage('#popupCard');
 
 const handleCardClick = (cardName, cardLink) => {
     popupCard.open(cardName, cardLink);
 };
 
-//Добавление карточек на страницу
-const cardElements = new Section({ items: initialCards, renderer: (item) => {
+//Создание карточек
+function createCard(item) {
     const cardExemplar = new Card(item, '.element-template', handleCardClick);
-    
+
     const card = cardExemplar.generateCardElement();
 
-    cardElements.addItem(card);
+    return card; 
+}
+
+//Добавление карточек на страницу
+const cardElements = new Section({ items: initialCards, renderer: (item) => {
+    cardElements.addItem(createCard(item));
 }
 }, '.elements');
 
 //Добавление новых карточек
-const formAddElement = new PopupWithForm('#popupAdd', (data) => {
-    const newCardExemplar = new Card(data, '.element-template', handleCardClick);
+const popupAdd = new PopupWithForm('#popupAdd', (data) => {
+    cardElements.addItem(createCard(data));
 
-    const newCard = newCardExemplar.generateCardElement();
-
-    newCard.querySelector('.element__image').src = data.link;
-    newCard.querySelector('.element__name').textContent = data.name;
-
-    cardElements.addItem(newCard);
-
-    formAddElement.close();
+    popupAdd.close();
 });
 
 const userInfo = new UserInfo({ nameSelector: '.profile__title', aboutSelector: '.profile__subtitle' });
 
 //Добавление информации о пользователе на страницу
-const formEditElement = new PopupWithForm('#popupEdit', (data) => {
+const popupEdit = new PopupWithForm('#popupEdit', (data) => {
     userInfo.setUserInfo(data);
 
-    formEditElement.close();
+    popupEdit.close();
 });
 
 cardElements.renderItems();
-formEditElement.setEventListeners();
-formAddElement.setEventListeners();
 popupEdit.setEventListeners();
 popupAdd.setEventListeners();
 popupCard.setEventListeners();
@@ -85,10 +75,7 @@ enableValidation(obj);
 popupEditOpenButton.addEventListener('click', () => {
     popupEdit.open();
 
-    const currentUserInfo = userInfo.getUserInfo();
-
-    nameInput.value = currentUserInfo.profileName;
-    jobInput.value = currentUserInfo.about;
+    popupEdit.setInputValues(userInfo.getUserInfo());
 
     formValidators['nameFormEdit'].resetValidation();
 });

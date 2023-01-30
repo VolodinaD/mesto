@@ -1,7 +1,5 @@
 export const popupEditOpenButton = document.querySelector('.profile__edit-button');
 export const popupAddOpenButton = document.querySelector('.profile__add-button');
-export const nameInput = document.querySelector('.form__input_type_name');
-export const jobInput = document.querySelector('.form__input_type_about');
 export const formValidators = {};
 
 //Объект настроек для валидации
