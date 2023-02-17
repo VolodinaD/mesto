@@ -18,4 +18,4 @@
 
 **GitHub Pages**
 
-* [Ссылка на на GitHub Pages](https://volodinad.github.io/mesto/index.html)
+* [Ссылка на на GitHub Pages](https://volodinad.github.io/mesto)

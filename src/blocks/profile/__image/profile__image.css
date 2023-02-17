@@ -1,11 +1,11 @@
 .profile__image {
-    min-width: 120px;
-    max-width: 38vw;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     border-radius: 50%;
+    object-fit: cover;
 }
 
-@media all and (min-width: 940px) {
-    .profile__image {
-        max-width: 120px;
-    }   
+.profile__image:hover {
+    cursor: pointer;
+    opacity: 0.2;
 }

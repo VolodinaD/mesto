@@ -1,0 +1,9 @@
+.popup__container-avatar {
+    max-height: 272px;
+}
+
+@media all and (max-width: 619px) {
+    .popup__container-avatar {
+        max-height: 245px;
+    }  
+}
