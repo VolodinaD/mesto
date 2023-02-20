@@ -1,7 +1,6 @@
 export const popupEditOpenButton = document.querySelector('.profile__edit-button');
 export const popupAddOpenButton = document.querySelector('.profile__add-button');
 export const popupAvatarOpenIcon = document.querySelector('.profile__image-container');
-export const cardDeleteButton = document.querySelector('.popup-delete__button');
 export const formValidators = {};
 
 //Объект настроек для валидации

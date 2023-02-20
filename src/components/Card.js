@@ -1,8 +1,5 @@
-import { api, userInfo, popupDelete } from '../pages/index.js';
-import { cardDeleteButton } from '../utils/constants.js';
-
 export default class Card {
-    constructor(data, templateSelector, handleCardClick) {
+    constructor(data, templateSelector, handleCardClick, handlePutLikeClick, handleDeleteLikeClick, handleTrashClick, userId) {
         this._name = data.name;
         this._link = data.link;
         this._likes = data.likes;
@@ -10,6 +7,10 @@ export default class Card {
         this._ownerId = data.owner._id;
         this._templateSelector = templateSelector;
         this._handleCardClick = handleCardClick;
+        this._handlePutLikeClick = handlePutLikeClick;
+        this._handleDeleteLikeClick = handleDeleteLikeClick;
+        this._handleTrashClick = handleTrashClick;
+        this._userId = userId;
     }    
 
     _getTemplateElement() {
@@ -23,41 +24,11 @@ export default class Card {
     }
 
     _putLike(evt) {
-        api.putLike(this._cardId)
-            .then(res => {
-                evt.target.classList.add('element__like-button_active');
-                
-                this._likeNumber.textContent = res.likes.length;
-            })
-            .catch((err) => {
-                console.log(err);
-            }); 
+        this._handlePutLikeClick(this._cardId, this._likeNumber, evt);
     }
 
     _deleteLike(evt) {
-        api.deleteLike(this._cardId)
-            .then(res => {
-                evt.target.classList.remove('element__like-button_active');
-
-                this._likeNumber.textContent = res.likes.length;
-            })
-            .catch((err) => {
-                console.log(err);
-            }); 
-    }
-
-    _deleteCard() {
-        api.deleteCard(this._cardId)
-            .then(() => {
-                this._element.remove();
-
-                delete this._cardId;
-                
-                popupDelete.close();
-            })
-            .catch((err) => {
-                console.log(err);
-            }); 
+        this._handleDeleteLikeClick(this._cardId, this._likeNumber, evt);
     }
 
     _setEventListeners() {
@@ -74,12 +45,8 @@ export default class Card {
             }
         });
         
-        this._trashButton.addEventListener('click', () => {
-            popupDelete.open();
-
-            cardDeleteButton.addEventListener('click', () => {
-                this._deleteCard();
-            });
+        this._trashButton.addEventListener('click', (evt) => {
+            this._handleTrashClick(this._cardId, evt);
         });
 
         this._cardImage.addEventListener('click', () => {
@@ -98,12 +65,12 @@ export default class Card {
         this._likeNumber.textContent = this._likes.length;
 
         this._likes.forEach((item) => {
-            if (item._id === userInfo.getUserId()) {
+            if (item._id === this._userId) {
                 this._likeButton.classList.add('element__like-button_active');
             }
         });
 
-        if (!(this._ownerId === userInfo.getUserId())) {
+        if (!(this._ownerId === this._userId)) {
             this._trashButton.remove();
         }
                 

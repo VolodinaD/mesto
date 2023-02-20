@@ -2,9 +2,9 @@ import '../pages/index.css';
 import Card from '../components/Card.js';
 import FormValidator from '../components/FormValidator.js';
 import Section from '../components/Section.js';
-import Popup from '../components/Popup.js';
 import PopupWithImage from '../components/PopupWithImage.js';
 import PopupWithForm from '../components/PopupWithForm.js';
+import PopupWithConfirmation from '../components/PopupWithConfirmation.js';
 import UserInfo from '../components/UserInfo.js';
 import Api from '../components/Api.js';
 import {
@@ -15,7 +15,7 @@ import {
     obj
 } from '../utils/constants.js';
 
-export const api = new Api({
+const api = new Api({
     baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-59',
     headers: {
       authorization: '6648a217-161e-491e-b802-79fe9d15bd79',
@@ -23,19 +23,60 @@ export const api = new Api({
     }
 }); 
 
-export const userInfo = new UserInfo({ nameSelector: '.profile__title', aboutSelector: '.profile__subtitle', avatarSelector: '.profile__image' });
-
-export const popupDelete = new Popup('#popupDelete');
+const userInfo = new UserInfo({ nameSelector: '.profile__title', aboutSelector: '.profile__subtitle', avatarSelector: '.profile__image' });
 
 const popupCard = new PopupWithImage('#popupCard');
 
+const popupDelete = new PopupWithConfirmation('#popupDelete');
+
+//Коллбэки
 const handleCardClick = (cardName, cardLink) => {
     popupCard.open(cardName, cardLink);
 };
 
+const handlePutLikeClick = (cardId, likeNumber, evt) => {
+    api.putLike(cardId)
+        .then(res => {
+            evt.target.classList.add('element__like-button_active');
+        
+            likeNumber.textContent = res.likes.length;
+        })
+        .catch((err) => {
+            console.log(err);
+        }); 
+};
+
+const handleDeleteLikeClick = (cardId, likeNumber, evt) => {
+    api.deleteLike(cardId)
+        .then(res => {
+            evt.target.classList.remove('element__like-button_active');
+
+            likeNumber.textContent = res.likes.length;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+};
+
+const handleTrashClick = (cardId, evt) => {
+    popupDelete.open();
+
+    popupDelete.setHandleConfirmationSubmit(() => {
+        api.deleteCard(cardId)
+            .then(() => {
+                evt.target.closest('.element').remove();
+
+                popupDelete.close();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    });
+};
+
 //Создание карточек
 function createCard(item) {
-    const cardExemplar = new Card(item, '.element-template', handleCardClick);
+    const cardExemplar = new Card(item, '.element-template', handleCardClick, handlePutLikeClick, handleDeleteLikeClick, handleTrashClick, userInfo.getUserId());
 
     const card = cardExemplar.generateCardElement();
 
@@ -64,6 +105,11 @@ const popupAdd = new PopupWithForm('#popupAdd', (data) => {
         })
         .catch((err) => {
             console.log(err);
+        })
+        .finally(() => {
+            setTimeout(() => {
+                popupAdd.renderLoading(false);
+            }, 500);
         });
 });
 
@@ -77,7 +123,12 @@ const popupEdit = new PopupWithForm('#popupEdit', (data) => {
         })
         .catch((err) => {
             console.log(err);
-        }); 
+        }) 
+        .finally(() => {
+            setTimeout(() => {
+                popupEdit.renderLoading(false);
+            }, 500);
+        });
 });
 
 //Изменение аватара пользователя
@@ -90,7 +141,12 @@ const popupAvatar = new PopupWithForm('#popupAvatar', (data) => {
         })
         .catch((err) => {
             console.log(err);
-        }); 
+        })
+        .finally(() => {
+            setTimeout(() => {
+                popupAvatar.renderLoading(false);
+            }, 500);
+        });
 });
 
 //Включение валидации форм
@@ -110,23 +166,17 @@ const enableValidation = (obj) => {
 enableValidation(obj);
 
 //Получение данных от сервера
-api.getUserInfo()
-    .then(res => {
-        userInfo.setUserId(res._id);
-        userInfo.setUserInfo(res);
-        userInfo.setUserAvatar(res);
+Promise.all([api.getUserInfo(), api.getInitialCards()])
+    .then(([userData, cards]) => {
+        userInfo.setUserId(userData._id);
+        userInfo.setUserInfo(userData);
+        userInfo.setUserAvatar(userData);
+        
+        cardElements.renderItems(cards.reverse());
     })
     .catch((err) => {
         console.log(err);
     });
-
-api.getInitialCards()
-    .then(res => {
-        cardElements.renderItems(res.reverse());
-    })
-    .catch((err) => {
-        console.log(err);
-    }); 
 
 //Навешивание слушателей на экземпляры попапов
 popupEdit.setEventListeners();
